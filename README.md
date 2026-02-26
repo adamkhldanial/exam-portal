@@ -1,6 +1,6 @@
-# ExamPortal — Laravel 11 Online Examination System
+# ExamPortal — Laravel 12 Online Examination System
 
-A full-featured online examination and student management portal built with **Laravel 11 + Breeze**.
+A full-featured online examination and student management portal built with **Laravel 12 + Breeze**.
 
 ## Features
 
@@ -17,8 +17,12 @@ A full-featured online examination and student management portal built with **La
 
 ## Tech Stack
 
-- PHP 8.2+, Laravel 11, Laravel Breeze (Blade + Tailwind CSS)
-- MySQL / SQLite (configurable)
+- Backend: PHP + Laravel 12 
+- Auth/UI scaffolding: Laravel Breeze (Blade) 
+- Frontend build: Vite 
+- Frontend libs: Tailwind CSS + PostCSS + Autoprefixer + Alpine.js + Axios 
+- Database: MySQL 
+- Testing: Pest + PHPUnit 
 
 ## Installation
 ```bash
