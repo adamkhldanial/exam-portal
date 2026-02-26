@@ -1,0 +1,68 @@
+created:
+    - app/Http/Controllers/Api/ClassRoomController.php
+    - app/Http/Controllers/Api/SubjectController.php
+    - app/Http/Controllers/Api/ExamController.php
+    - app/Http/Controllers/Api/QuestionController.php
+    - app/Http/Controllers/Api/OptionController.php
+    - app/Http/Controllers/Api/ExamSubmissionController.php
+    - app/Http/Controllers/Api/AnswerController.php
+    - database/factories/UserFactory.php
+    - database/factories/ClassRoomFactory.php
+    - database/factories/ClassStudentFactory.php
+    - database/factories/SubjectFactory.php
+    - database/factories/ExamFactory.php
+    - database/factories/QuestionFactory.php
+    - database/factories/OptionFactory.php
+    - database/factories/ExamSubmissionFactory.php
+    - database/factories/AnswerFactory.php
+    - database/migrations/2026_02_24_072039_create_users_table.php
+    - database/migrations/2026_02_24_072040_create_class_rooms_table.php
+    - database/migrations/2026_02_24_072041_create_class_students_table.php
+    - database/migrations/2026_02_24_072042_create_subjects_table.php
+    - database/migrations/2026_02_24_072043_create_exams_table.php
+    - database/migrations/2026_02_24_072044_create_questions_table.php
+    - database/migrations/2026_02_24_072045_create_options_table.php
+    - database/migrations/2026_02_24_072046_create_exam_submissions_table.php
+    - database/migrations/2026_02_24_072047_create_answers_table.php
+    - app/Models/User.php
+    - app/Models/ClassRoom.php
+    - app/Models/ClassStudent.php
+    - app/Models/Subject.php
+    - app/Models/Exam.php
+    - app/Models/Question.php
+    - app/Models/Option.php
+    - app/Models/ExamSubmission.php
+    - app/Models/Answer.php
+    - tests/Feature/Http/Controllers/Api/ClassRoomControllerTest.php
+    - tests/Feature/Http/Controllers/Api/SubjectControllerTest.php
+    - tests/Feature/Http/Controllers/Api/ExamControllerTest.php
+    - tests/Feature/Http/Controllers/Api/QuestionControllerTest.php
+    - tests/Feature/Http/Controllers/Api/OptionControllerTest.php
+    - tests/Feature/Http/Controllers/Api/ExamSubmissionControllerTest.php
+    - tests/Feature/Http/Controllers/Api/AnswerControllerTest.php
+    - app/Http/Requests/Api/ClassRoomStoreRequest.php
+    - app/Http/Requests/Api/ClassRoomUpdateRequest.php
+    - app/Http/Requests/Api/SubjectStoreRequest.php
+    - app/Http/Requests/Api/SubjectUpdateRequest.php
+    - app/Http/Requests/Api/ExamStoreRequest.php
+    - app/Http/Requests/Api/ExamUpdateRequest.php
+    - app/Http/Requests/Api/QuestionStoreRequest.php
+    - app/Http/Requests/Api/QuestionUpdateRequest.php
+    - app/Http/Requests/Api/OptionStoreRequest.php
+    - app/Http/Requests/Api/OptionUpdateRequest.php
+    - app/Http/Requests/Api/ExamSubmissionStoreRequest.php
+    - app/Http/Requests/Api/ExamSubmissionUpdateRequest.php
+    - app/Http/Requests/Api/AnswerStoreRequest.php
+    - app/Http/Requests/Api/AnswerUpdateRequest.php
+updated:
+    - routes/web.php
+models:
+    User: { role: 'enum:lecturer,student default:student' }
+    ClassRoom: { name: string, code: 'string unique', description: 'text nullable', created_by: 'id foreign:users onDelete:cascade' }
+    ClassStudent: { table: class_student, class_room_id: 'id foreign:class_rooms onDelete:cascade', user_id: 'id foreign:users onDelete:cascade' }
+    Subject: { name: string, code: 'string unique', description: 'text nullable', class_room_id: 'id foreign:class_rooms onDelete:cascade', created_by: 'id foreign:users onDelete:cascade' }
+    Exam: { title: string, description: 'text nullable', subject_id: 'id foreign:subjects onDelete:cascade', created_by: 'id foreign:users onDelete:cascade', time_limit: unsignedInteger, starts_at: 'timestamp nullable', ends_at: 'timestamp nullable', is_published: 'boolean default:false', passing_score: 'unsignedInteger default:50' }
+    Question: { exam_id: 'id foreign:exams onDelete:cascade', question_text: text, type: 'enum:multiple_choice,open_text', marks: 'unsignedInteger default:1', order: 'unsignedInteger default:0' }
+    Option: { question_id: 'id foreign:questions onDelete:cascade', option_text: string, is_correct: 'boolean default:false' }
+    ExamSubmission: { exam_id: 'id foreign:exams onDelete:cascade', user_id: 'id foreign:users onDelete:cascade', started_at: timestamp, submitted_at: 'timestamp nullable', score: 'unsignedInteger nullable', total_marks: 'unsignedInteger nullable', status: 'enum:in_progress,submitted,graded default:in_progress' }
+    Answer: { exam_submission_id: 'id foreign:exam_submissions onDelete:cascade', question_id: 'id foreign:questions onDelete:cascade', option_id: 'id foreign:options nullable onDelete:null', answer_text: 'text nullable', marks_awarded: 'unsignedInteger nullable' }

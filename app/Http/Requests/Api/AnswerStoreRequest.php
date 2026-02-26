@@ -1,0 +1,30 @@
+<?php
+
+namespace App\Http\Requests\Api;
+
+use Illuminate\Foundation\Http\FormRequest;
+
+class AnswerStoreRequest extends FormRequest
+{
+    /**
+     * Determine if the user is authorized to make this request.
+     */
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    /**
+     * Get the validation rules that apply to the request.
+     */
+    public function rules(): array
+    {
+        return [
+            'exam_submission_id' => ['required', 'integer', 'exists:exam_submissions,id'],
+            'question_id' => ['required', 'integer', 'exists:questions,id'],
+            'option_id' => ['nullable', 'integer', 'exists:options,id'],
+            'answer_text' => ['nullable', 'string'],
+            'marks_awarded' => ['nullable', 'integer', 'min:0'],
+        ];
+    }
+}

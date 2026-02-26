@@ -1,0 +1,185 @@
+models:
+  # 1. Adds to existing users table
+  User:
+    role: enum:lecturer,student default:student
+    # Note: Blueprint will generate the add_role_to_users_table migration.
+    # You will just need to manually append ->after('email') to it.
+
+  # 2. Class Rooms
+  ClassRoom:
+    name: string
+    code: string unique
+    description: text nullable
+    created_by: id foreign:users onDelete:cascade
+
+  # 3. Class Student Pivot
+  ClassStudent:
+    table: class_student
+    class_room_id: id foreign:class_rooms onDelete:cascade
+    user_id: id foreign:users onDelete:cascade
+    # Note: Blueprint doesn't do composite primary keys natively.
+    # You'll need to manually add $table->primary(['class_room_id', 'user_id']); to the generated file.
+
+  # 4. Subjects
+  Subject:
+    name: string
+    code: string unique
+    description: text nullable
+    class_room_id: id foreign:class_rooms onDelete:cascade
+    created_by: id foreign:users onDelete:cascade
+
+  # 5. Exams
+  Exam:
+    title: string
+    description: text nullable
+    subject_id: id foreign:subjects onDelete:cascade
+    created_by: id foreign:users onDelete:cascade
+    time_limit: unsignedInteger
+    starts_at: timestamp nullable
+    ends_at: timestamp nullable
+    is_published: boolean default:false
+    passing_score: unsignedInteger default:50
+
+  # 6. Questions
+  Question:
+    exam_id: id foreign:exams onDelete:cascade
+    question_text: text
+    type: enum:multiple_choice,open_text
+    marks: unsignedInteger default:1
+    order: unsignedInteger default:0
+
+  # 7. Options
+  Option:
+    question_id: id foreign:questions onDelete:cascade
+    option_text: string
+    is_correct: boolean default:false
+
+  # 8. Exam Submissions
+  ExamSubmission:
+    exam_id: id foreign:exams onDelete:cascade
+    user_id: id foreign:users onDelete:cascade
+    started_at: timestamp
+    submitted_at: timestamp nullable
+    score: unsignedInteger nullable
+    total_marks: unsignedInteger nullable
+    status: enum:in_progress,submitted,graded default:in_progress
+    # Note: Manually add $table->unique(['exam_id', 'user_id']); to the generated file.
+
+  # 9. Answers
+  Answer:
+    exam_submission_id: id foreign:exam_submissions onDelete:cascade
+    question_id: id foreign:questions onDelete:cascade
+    option_id: id foreign:options nullable onDelete:null
+    answer_text: text nullable
+    marks_awarded: unsignedInteger nullable
+
+controllers:
+  Api\ClassRoom:
+    index:
+      query: all
+      respond: ClassRoom.collection
+    store:
+      validate: name, code, description, created_by
+      save: ClassRoom
+      respond: ClassRoom
+    show:
+      respond: ClassRoom
+    update:
+      validate: name, code, description
+      update: ClassRoom
+      respond: ClassRoom
+    destroy:
+      delete: ClassRoom
+      respond: 204
+
+  Api\Subject:
+    index:
+      query: all
+      respond: Subject.collection
+    store:
+      validate: name, code, description, class_room_id, created_by
+      save: Subject
+      respond: Subject
+    show:
+      respond: Subject
+    update:
+      validate: name, code, description
+      update: Subject
+      respond: Subject
+    destroy:
+      delete: Subject
+      respond: 204
+
+  Api\Exam:
+    index:
+      query: all
+      respond: Exam.collection
+    store:
+      validate: title, subject_id, created_by, time_limit, passing_score
+      save: Exam
+      respond: Exam
+    show:
+      respond: Exam
+    update:
+      validate: title, description, time_limit, starts_at, ends_at, is_published, passing_score
+      update: Exam
+      respond: Exam
+    destroy:
+      delete: Exam
+      respond: 204
+
+  Api\Question:
+    index:
+      query: all
+      respond: Question.collection
+    store:
+      validate: exam_id, question_text, type, marks, order
+      save: Question
+      respond: Question
+    show:
+      respond: Question
+    update:
+      validate: question_text, type, marks, order
+      update: Question
+      respond: Question
+    destroy:
+      delete: Question
+      respond: 204
+
+  Api\Option:
+    store:
+      validate: question_id, option_text, is_correct
+      save: Option
+      respond: Option
+    update:
+      validate: option_text, is_correct
+      update: Option
+      respond: Option
+    destroy:
+      delete: Option
+      respond: 204
+
+  Api\ExamSubmission:
+    index:
+      query: all
+      respond: ExamSubmission.collection
+    store:
+      validate: exam_id, user_id, started_at
+      save: ExamSubmission
+      respond: ExamSubmission
+    show:
+      respond: ExamSubmission
+    update:
+      validate: submitted_at, score, total_marks, status
+      update: ExamSubmission
+      respond: ExamSubmission
+
+  Api\Answer:
+    store:
+      validate: exam_submission_id, question_id, option_id, answer_text
+      save: Answer
+      respond: Answer
+    update:
+      validate: option_id, answer_text, marks_awarded
+      update: Answer
+      respond: Answer
